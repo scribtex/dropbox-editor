@@ -64,7 +64,7 @@ app.get(/^\/files\/(.*)/, function(req, res, next) {
     }
 
     res.writeHead(status, headers);
-    res.write(reply.toString())
+    res.write(reply)
     res.end();
   });
 });
