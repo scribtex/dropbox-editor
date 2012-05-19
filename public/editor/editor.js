@@ -6,8 +6,9 @@ define([
   "components/image-viewer/image-viewer",
   "components/save/save",
   "components/merge/merge",
+  "components/file-opener/file-opener",
   "components/dialog/dialog"
-], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, Dialog) {
+], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, FileOpener, Dialog) {
   if (typeof console === "undefined" || typeof console.log === "undefined") {
     console = {};
     console.log = function() {};
@@ -15,8 +16,9 @@ define([
 
   var Editor = Backbone.Model.extend({
     defaults : {
-      fileBaseUrl : "/files",
-      mergeUrl    : "/merge"
+      fileBaseUrl   : "/files",
+      mergeUrl      : "/merge",
+      rootDirectory : Directory.findOrBuild("")
     },
 
     start : function() {
@@ -27,7 +29,8 @@ define([
 
       this.components = {
         save: new Save(),
-        merge: new Merge()
+        merge: new Merge(),
+        fileOpener: new FileOpener()
       }
 
       editor.on("change:openFile", function() {
@@ -47,13 +50,7 @@ define([
         $("#editor").html(editor.get("openFileView").el);
       });
 
-      var file = File.findOrBuild(location.hash.slice(1));
-      file.fetch({
-        success : function(file, resp) {
-          editor.set("openFile", file);
-        },
-        error : editor.handleAjaxError
-      });
+      editor.components.fileOpener.showOpenFileDialog();
     },
 
     _getFileViewType : function(type) {

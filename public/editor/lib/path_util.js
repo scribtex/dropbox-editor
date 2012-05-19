@@ -25,6 +25,10 @@ define(function() {
 
       var relativePath = path.slice(base.length);
       return PathUtil.stripLeadingSlashes(relativePath);
+    },
+
+    basename : function(path) {
+      return path.split("/").slice(-1)[0];
     }
   };
 

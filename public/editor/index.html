@@ -126,5 +126,36 @@
         <ol id="qunit-tests"></ol>
       </div>
     </script>
+
+    <script type="text/template" id="open-file-dialog-template">
+      <div class="modal" id="open-file-dialog">
+        <div class="modal-header">
+          <h3>Open a file</h3>
+        </div>
+        <div class="modal-body">
+          <div class="file-list-wrapper"></div>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="open-button btn btn-primary">Open</a>
+          <a href="#" class="cancel-button btn">Cancel</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="file-list-template">
+      <div class="file-list">
+
+      </div>
+    </script>
+
+    <script type="text/template" id="file-list-entry-template">
+      <div class="file-list-entry">
+        {{ name }}
+      </div>
+    </script>
+
+    <script type="text/template" id="file-list-loading-template">
+      <div class="loading">Loading...</div>
+    </script>
   </body>
 </html>

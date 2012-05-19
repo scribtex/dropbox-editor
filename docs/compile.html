@@ -1,0 +1,127 @@
+<!DOCTYPE html>  <html> <head>   <title>compile.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="base.html">                 base.js               </a>                                           <a class="source" href="clsi_client.html">                 clsi_client.js               </a>                                           <a class="source" href="compile.html">                 compile.js               </a>                                           <a class="source" href="new-window-view.html">                 new-window-view.js               </a>                                           <a class="source" href="dialog.html">                 dialog.js               </a>                                           <a class="source" href="file-browser-view.html">                 file-browser-view.js               </a>                                           <a class="source" href="file-opener.html">                 file-opener.js               </a>                                           <a class="source" href="image-viewer.html">                 image-viewer.js               </a>                                           <a class="source" href="merge.html">                 merge.js               </a>                                           <a class="source" href="tests.html">                 tests.js               </a>                                           <a class="source" href="pdf-window-view.html">                 pdf-window-view.js               </a>                                           <a class="source" href="save.html">                 save.js               </a>                                           <a class="source" href="tests.html">                 tests.js               </a>                                           <a class="source" href="text-editor.html">                 text-editor.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               compile.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span><span class="p">([</span>
+  <span class="s2">&quot;components/base&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;components/compile/clsi_client&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;components/dialog/dialog&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;components/compile/views/new-window-view&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lib/path_util&quot;</span>
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Base</span><span class="p">,</span> <span class="nx">CLSIClient</span><span class="p">,</span> <span class="nx">Dialog</span><span class="p">,</span> <span class="nx">NewWindowView</span><span class="p">,</span> <span class="nx">PathUtil</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">CompileState</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">();</span>
+
+  <span class="kd">var</span> <span class="nx">Compile</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">enableCompiling</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">compileState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CompileState</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">NewWindowView</span><span class="p">({</span>
+        <span class="nx">model</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">compileState</span> 
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">compile</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">disableCompiling</span><span class="p">();</span>
+
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rootDirectory&quot;</span><span class="p">).</span><span class="nx">populateSubDirectories</span><span class="p">({</span>
+        <span class="nx">success</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">_sendRequest</span><span class="p">();</span>
+        <span class="p">},</span>
+        <span class="nx">error</span>   <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="nx">editor</span><span class="p">.</span><span class="nx">showConnectionErrorDialog</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">})</span>
+    <span class="p">},</span>
+
+    <span class="nx">_sendRequest</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">resources</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{};</span>
+
+      <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;openFileView&quot;</span><span class="p">).</span><span class="nx">transferContentToModel</span><span class="p">();</span>
+
+      <span class="kd">var</span> <span class="nx">rootResourcePath</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;openFile&quot;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\\documentclass/</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">rootResourcePath</span> <span class="o">=</span> <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;openFile&quot;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">rootResourcePath</span> <span class="o">=</span> <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;mainFile&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">rootResourcePath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">showNoRootResourceDialog</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">enableCompiling</span><span class="p">();</span>
+        <span class="k">return</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rootDirectory&quot;</span><span class="p">).</span><span class="nx">eachFile</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">file</span> <span class="o">===</span> <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;openFile&quot;</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">resources</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+            <span class="nx">content</span> <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">),</span>
+            <span class="nx">path</span>    <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+          <span class="p">});</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">resources</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+            <span class="nx">path</span>    <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">),</span>
+            <span class="nx">url</span>     <span class="o">:</span> <span class="nx">PathUtil</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">),</span> <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;fileBaseUrl&quot;</span><span class="p">),</span> <span class="nx">file</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)),</span>
+            <span class="nx">modifed</span> <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;lastModified&quot;</span><span class="p">)</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+      
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">CLSIClient</span><span class="p">.</span><span class="nx">compile</span><span class="p">(</span><span class="nx">resources</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">rootResourcePath</span> <span class="o">:</span> <span class="nx">rootResourcePath</span><span class="p">,</span>
+        <span class="nx">success</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="p">{</span> 
+          <span class="nx">self</span><span class="p">.</span><span class="nx">processResponse</span><span class="p">(</span><span class="nx">resp</span><span class="p">);</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">enableCompiling</span><span class="p">();</span>
+        <span class="p">},</span>
+        <span class="nx">error</span>   <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="nx">editor</span><span class="p">.</span><span class="nx">showConnectionErrorDialog</span><span class="p">();</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">enableCompiling</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">})</span>
+    <span class="p">},</span>
+
+    <span class="nx">processResponse</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">pdf</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">log</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">resp</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">output_files</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">output_files</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pdf</span> <span class="o">=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">output_files</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">url</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">logs</span> <span class="o">&amp;&amp;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">logs</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">log</span> <span class="o">=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">compile</span><span class="p">.</span><span class="nx">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">url</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">compileState</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+        <span class="nx">pdfUrl</span> <span class="o">:</span> <span class="nx">pdf</span><span class="p">,</span>
+        <span class="nx">logUrl</span> <span class="o">:</span> <span class="nx">log</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">enableCompiling</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#compile-button&quot;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#compile-button&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">self</span><span class="p">.</span><span class="nx">compile</span><span class="p">()</span> <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">disableCompiling</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#compile-button&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
+      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#compile-button&quot;</span><span class="p">).</span><span class="nx">off</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">showNoRootResourceDialog</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">noRootResourceDialog</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">noRootResourceDialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dialog</span><span class="p">({</span>
+          <span class="nx">template</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#no-root-resource-dialog-template&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(),</span>
+          <span class="nx">events</span>   <span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;click .ok-button&quot;</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+              <span class="nx">self</span><span class="p">.</span><span class="nx">noRootResourceDialog</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">})</span>
+      <span class="p">}</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">noRootResourceDialog</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">Compile</span><span class="p">;</span>
+<span class="p">})</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>  <html> <head>   <title>file-opener.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="base.html">                 base.js               </a>                                           <a class="source" href="clsi_client.html">                 clsi_client.js               </a>                                           <a class="source" href="compile.html">                 compile.js               </a>                                           <a class="source" href="new-window-view.html">                 new-window-view.js               </a>                                           <a class="source" href="dialog.html">                 dialog.js               </a>                                           <a class="source" href="file-browser-view.html">                 file-browser-view.js               </a>                                           <a class="source" href="file-opener.html">                 file-opener.js               </a>                                           <a class="source" href="image-viewer.html">                 image-viewer.js               </a>                                           <a class="source" href="merge.html">                 merge.js               </a>                                           <a class="source" href="tests.html">                 tests.js               </a>                                           <a class="source" href="pdf-window-view.html">                 pdf-window-view.js               </a>                                           <a class="source" href="save.html">                 save.js               </a>                                           <a class="source" href="tests.html">                 tests.js               </a>                                           <a class="source" href="text-editor.html">                 text-editor.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               file-opener.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span><span class="p">([</span>
+  <span class="s2">&quot;components/base&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;components/file-opener/file-browser-view&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;components/dialog/dialog&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;models/directory&quot;</span>
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Base</span><span class="p">,</span> <span class="nx">FileBrowserView</span><span class="p">,</span> <span class="nx">Dialog</span><span class="p">,</span> <span class="nx">Directory</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">fileOpener</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">fileBrowserView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileBrowserView</span><span class="p">({</span>
+        <span class="nx">model</span> <span class="o">:</span> <span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rootDirectory&quot;</span><span class="p">)</span>
+      <span class="p">});</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">fileBrowserView</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">editor</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;openFile&quot;</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
+        <span class="nx">file</span><span class="p">.</span><span class="nx">fetch</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">hide</span><span class="p">();</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">fileBrowserView</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;change:selection&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_enableOpenButton</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">_disableOpenButton</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">showOpenFileDialog</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">},</span>
+
+    <span class="nx">getOpenFileDialog</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">openFileDialog</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">openFileDialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dialog</span><span class="p">({</span>
+          <span class="nx">template</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#open-file-dialog-template&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(),</span>
+          <span class="nx">events</span>   <span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;click .cancel-button&quot;</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+              <span class="nx">self</span><span class="p">.</span><span class="nx">openFileDialog</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
+            <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>We won't enable the open button yet.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="p">}</span>
+        <span class="p">});</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">openFileDialog</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.file-list-wrapper&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fileBrowserView</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_disableOpenButton</span><span class="p">();</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">openFileDialog</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+    <span class="nx">_disableOpenButton</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.open-button&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.open-button&quot;</span><span class="p">).</span><span class="nx">off</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">_enableOpenButton</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.open-button&quot;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getOpenFileDialog</span><span class="p">().</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.open-button&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">fileBrowserView</span><span class="p">.</span><span class="nx">openSelected</span><span class="p">();</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">fileOpener</span><span class="p">;</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
