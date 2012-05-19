@@ -64,8 +64,9 @@ app.get(/^\/files\/(.*)/, function(req, res, next) {
       }
     }
 
+    console.log(filePath, status, reply);
     res.writeHead(status, headers);
-    res.write(reply)
+    res.write(reply || ""); // Sometimes reply is undefined. Blank file?
     res.end();
   });
 });

@@ -7,18 +7,22 @@ define([
   "components/save/save",
   "components/merge/merge",
   "components/file-opener/file-opener",
+  "components/tabs/tabs",
   "components/dialog/dialog"
-], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, FileOpener, Dialog) {
+], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, FileOpener, Tabs, Dialog) {
   if (typeof console === "undefined" || typeof console.log === "undefined") {
     console = {};
     console.log = function() {};
   }
 
+  var OpenFiles = Backbone.Collection.extend();
+
   var Editor = Backbone.Model.extend({
     defaults : {
       fileBaseUrl   : "/files",
       mergeUrl      : "/merge",
-      rootDirectory : Directory.findOrBuild("")
+      rootDirectory : Directory.findOrBuild(""),
+      openFiles     : new OpenFiles()
     },
 
     start : function() {
@@ -30,25 +34,30 @@ define([
       this.components = {
         save       : new Save(),
         merge      : new Merge(),
-        fileOpener : new FileOpener()
+        fileOpener : new FileOpener(),
+        tabs       : new Tabs()
+      }
+    },
+
+    openFile : function(file) {
+      console.log("opening", file);
+      // If the file isn't already open we need to insert it into the collection of
+      // `openFiles`. Everything else should watch this collection if they need to
+      // react to this.
+      if (this.get("openFiles").models.indexOf(file) == -1) {
+        this.get("openFiles").add(file);
+
+        // Set up the view that will handle displaying the file in the tab pane.
+        var fileViewClass = editor._getFileViewType(file.get("type"));
+        var fileView = new fileViewClass({
+          model : file
+        });
+
+        // Display the tab
+        this.components.tabs.open(file, fileView);
       }
 
-      editor.on("change:openFile", function() {
-        var fileView = editor._getFileViewType(editor.get("openFile").get("type"));
-        editor.set("openFileView", new fileView({
-          model : editor.get("openFile")
-        }));
-
-        $("#file-path").html(editor.get("openFile").get("path").replace(/\//g, " / "));
-      });
-
-      editor.on("change:openFileView", function() {
-        if (editor.previous("openFileView")) {
-          editor.previous("openFileView").close();
-        }
-        editor.get("openFileView").render();
-        $("#editor").html(editor.get("openFileView").el);
-      });
+      this.set("openFile", file);
     },
 
     _getFileViewType : function(type) {

@@ -11,7 +11,7 @@ define([
       });
 
       this.fileBrowserView.on("open", function(file) {
-        editor.set("openFile", file);
+        editor.openFile(file);
         file.fetch();
         this.getOpenFileDialog().hide();
       }, this);

@@ -11,6 +11,7 @@
     <script src='/editor/support/jquery-1.7.2.min.js'></script>  
     <script src='/editor/bootstrap/js/bootstrap-dropdown.js'></script>  
     <script src='/editor/bootstrap/js/bootstrap-modal.js'></script>  
+    <script src='/editor/bootstrap/js/bootstrap-tab.js'></script>  
     <script src='/editor/support/underscore-min.js'></script>  
     <script src='/editor/support/backbone-min.js'></script>  
     <script src='/editor/support/backbone-customisations.js'></script>  
@@ -26,8 +27,17 @@
         <span id="save-status"></span>
       </div>
 
-      <div class="editor" id="editor" style="position: absolute; width: 100%; height: 200px; overflow: auto;">
-      </div>
+      <ul id="tab-bar" class="nav nav-tabs editor-tabs"></ul>
+
+      <div id="tab-panes" class="tab-content"></div>
+    </script>
+
+    <script type="text/template" id="tab-template">
+      <li><a href="#{{id}}">{{ name }}</a></li>
+    </script>
+
+    <script type="text/template" id="tab-pane-template">
+      <div class="tab-pane" id="{{id}}"></div>
     </script>
 
     <script type="text/template" id="save-success-template">

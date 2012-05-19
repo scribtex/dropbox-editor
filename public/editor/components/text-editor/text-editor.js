@@ -6,6 +6,7 @@ define(["components/base", "ace/ace", "ace/mode/latex"], function(Component, Ace
 
     onClose : function() {
       this.model.off("change:content", this.updateContent);
+      $(window).off("resize.text-editor." + this.cid);
     },
 
     render : function() {
@@ -19,6 +20,13 @@ define(["components/base", "ace/ace", "ace/mode/latex"], function(Component, Ace
       this.editor.getSession().setUseWrapMode(true);
       this.editor.setShowPrintMargin(false);
       this.editor.getSession().setValue(this.model.get("content"));
+
+      var self = this;
+      $(window).on("resize.text-editor." + this.cid, function() {
+        self.resize();
+      });
+      this.resize();
+
       return this;
     },
 
@@ -30,7 +38,13 @@ define(["components/base", "ace/ace", "ace/mode/latex"], function(Component, Ace
 
     transferContentToModel : function() {
       this.model.set("content", this.editor.getSession().getValue());
-    }
+    },
+
+    resize : function() {
+      this.$el.height(
+        $(window).innerHeight() - $("#toolbar").outerHeight() - $("#tab-bar").outerHeight()
+      );
+    },
   })
 
   return TextEditorView;
