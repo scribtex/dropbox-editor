@@ -9,11 +9,13 @@ define([
       this.fileBrowserView = new FileBrowserView({
         model : editor.get("rootDirectory")
       });
+
       this.fileBrowserView.on("open", function(file) {
         editor.set("openFile", file);
         file.fetch();
         this.getOpenFileDialog().hide();
       }, this);
+
       this.fileBrowserView.on("change:selection", function(file) {
         if (file) {
           this._enableOpenButton();
@@ -21,6 +23,11 @@ define([
           this._disableOpenButton();
         }
       }, this);
+
+      var self = this;
+      $("#open-button").on("click", function() {
+        self.showOpenFileDialog();
+      })
     },
 
     showOpenFileDialog : function() {

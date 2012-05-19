@@ -28,9 +28,9 @@ define([
       this.mainView.render();
 
       this.components = {
-        save: new Save(),
-        merge: new Merge(),
-        fileOpener: new FileOpener()
+        save       : new Save(),
+        merge      : new Merge(),
+        fileOpener : new FileOpener()
       }
 
       editor.on("change:openFile", function() {
@@ -49,8 +49,6 @@ define([
         editor.get("openFileView").render();
         $("#editor").html(editor.get("openFileView").el);
       });
-
-      editor.components.fileOpener.showOpenFileDialog();
     },
 
     _getFileViewType : function(type) {

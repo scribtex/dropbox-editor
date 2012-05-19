@@ -36,6 +36,7 @@ Reading Files
 
   * `X-Revision-Id` - The `revisionId` of the current version of the file just read.
   * `Content-Type` - The mimetype of the file just read.
+  * `X-Icon` - The icon to use for this file (from Dropbox).
 
 **Status:**
 

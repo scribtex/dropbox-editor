@@ -1,7 +1,7 @@
 var fs            = require("fs");
 var express       = require("express");
-var connect = require("connect");
-var MergeServer = require("./server/merge");
+var connect       = require("connect");
+var MergeServer   = require("./server/merge");
 
 var config = JSON.parse(fs.readFileSync(__dirname + "/config/config.json"));
 
@@ -19,7 +19,7 @@ app.get("/session/new", function(req, res, next) {
     req.session.dropbox_oauth_token_secret = dboxRes.oauth_token_secret;
 
     res.writeHead(302, {
-      "Location" : dboxRes.authorize_url + "&oauth_callback=" + encodeURIComponent("http://localhost:3000/session/create")
+      "Location" : dboxRes.authorize_url + "&oauth_callback=" + encodeURIComponent(config.host + "/session/create")
     });
     res.end();
   });
