@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+
+    <title>
+      Dropbox Editor
+    </title>
+  
+    <link rel="stylesheet" href='/editor/bootstrap/bootstrap/css/bootstrap.css'></link>
+    
+    <script src='/editor/support/jquery-1.7.2.min.js'></script>  
+    <script src='/editor/bootstrap/js/bootstrap-dropdown.js'></script>  
+    <script src='/editor/bootstrap/js/bootstrap-modal.js'></script>  
+    <script src='/editor/support/underscore-min.js'></script>  
+    <script src='/editor/support/backbone-min.js'></script>  
+    <script src='/editor/support/backbone-customisations.js'></script>  
+    <script src='/editor/support/require.js' data-main="editor" data-ace-base="/editor/support/ace"></script>  
+  
+  </head>
+
+  <body class="editor">
+    <script type="text/template" id="main-template">
+      <div class="toolbar" id="toolbar">
+        <div class="brand">
+          Something should probably go here!
+        </div>
+
+        <a class="save-btn btn" id="save-button"><i class="icon-save"></i> Save</a>
+        <a class="compile-btn btn btn-success" id="compile-button" href="/projects/james/test/compiled" target="scribtex-compiled"><i class="icon-compile"></i> Compile</a>
+        <span id="save-status"></span>
+      </div>
+
+      <div class="editor" id="editor" style="position: absolute; width: 100%; height: 200px; overflow: auto;">
+      </div>
+    </script>
+
+    <script type="text/template" id="save-success-template">
+      <span class="save-message save-success">Changes saved</span>
+    </script>
+
+    <script type="text/template" id="save-error-template">
+      <span class="save-message save-error">There was a problem saving, please try again</span>
+    </script>
+
+    <script type="text/template" id="save-saving-template">
+      <span class="save-message save-saving">Saving...</span>
+    </script>
+
+    <script type="text/template" id="save-merging-template">
+      <span class="save-message save-saving">Merging...</span>
+    </script>
+
+    <script type="text/template" id="image-viewer-template">
+      <div class="image-viewer">
+        <img src="{{imageSrc}}" style="max-width:90%; max-height:80%;"></img>
+        <div class="description">
+          Sorry, this image cannot be edited on ScribTeX. <a href="{{imageSrc}}">Download.</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="merge-needed-dialog-template">
+      <div class="modal" id="merge-needed-dialog">
+        <div class="modal-header">
+          <h3>Other changes made</h3>
+        </div>
+        <div class="modal-body">
+          <p>Someone else has changed this file since you last saved. What would you like to do?</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="merge-button btn btn-success">Merge Changes</a>
+          <a href="#" class="overwrite-button btn btn-danger">Overwrite</a>
+          <a href="#" class="cancel-button btn">Cancel</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="merge-conflict-dialog-template">
+      <div class="modal" id="merge-conflict-dialog">
+        <div class="modal-header">
+          <h3>Changes need review</h3>
+        </div>
+        <div class="modal-body">
+          <p>Sorry, I couldn't merge both sets of changes perfectly. Please resolve the conflicts and then save your file again.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="ok-button btn btn-primary">Ok</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="connection-error-dialog-template">
+      <div class="modal" id="connection-error-dialog">
+        <div class="modal-header">
+          <h3>Connection Error</h3>
+        </div>
+        <div class="modal-body">
+          <p>Sorry, there was a problem talking to the server. Please wait a few moments and try again.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="ok-button btn btn-primary">Ok</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="no-root-resource-dialog-template">
+      <div class="modal" id="no-root-resource-dialog">
+        <div class="modal-header">
+          <h3>Please choose a main file.</h3>
+        </div>
+        <div class="modal-body">
+          <p>Sorry, this doesn't look like a top level LaTeX file and I don't know which other file to compile. Please choose the main file for this project under the project settings.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="ok-button btn btn-primary">Ok</a>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/template" id="tests-template">
+      <div class="test-dialog">
+        <h1 id="qunit-header">ScribTeX Editor Tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+      </div>
+    </script>
+  </body>
+</html>

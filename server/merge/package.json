@@ -1,0 +1,10 @@
+{
+    "name"        : "scribtex-merge-utility",
+    "description" : "Provides a simple API for performing a three-way merge of files",
+    "version"     : "0.0.1",
+    "dependencies" : {
+        "async"   : "0.1.x",
+        "express" : "2.5.x",
+        "tmp"     : "0.0.x"
+    }
+}

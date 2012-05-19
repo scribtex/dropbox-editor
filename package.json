@@ -1,0 +1,8 @@
+{
+  "name" : "scribtex-dropbox",
+  "version" : "0.0.1",
+  "dependencies" : {
+    "express" : "2.5.9",
+    "dbox"    : "0.4.3"
+  }
+}

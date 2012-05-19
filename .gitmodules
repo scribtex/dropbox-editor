@@ -1,0 +1,3 @@
+[submodule "public/editor/bootstrap"]
+    path = public/editor/bootstrap
+    url = git@github.com:scribtex/bootstrap.git

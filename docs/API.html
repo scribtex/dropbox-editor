@@ -1,0 +1,55 @@
+<p>The editor server implements a backend agnostic API for reading and updating
+files and directories. This is an informal specification of the implementation.
+It is influenced by WEBDAV and the Dropbox API.</p>
+
+<h1>Concepts</h1>
+
+<p>Versioning is handled by passing around references to a <code>revisionId</code>. Whenever a file is 
+read, the current <code>revisionId</code> is also returned. Everytime a file is updated, the <code>revisionId</code>
+changes. The <code>revisionId</code> may be any string and need not increment in any predictable way.
+All it tells us is that two versions differ.</p>
+
+<p>In the rest of this document <code>baseUrl</code> refers to the Url that the files are accessed at.
+At the moment it is just <code>/files</code> but it will differ between users and projects when 
+support for these is added.</p>
+
+<p>In all requests the following status codes have meaning:</p>
+
+<ul><li>200 - Success. The request did what was expected.</li><li>401 - Authentication failure. Probably due to an expired token for accessing the backend.</li></ul>
+
+<p>Many other status codes can be returned so the client should be prepared to deal with
+them sensibly.</p>
+
+<h1>API</h1>
+
+<h2>Reading Files</h2>
+
+<p><strong>Url:</strong> <code>{baseUrl}/{filePath}</code> - <code>GET</code></p>
+
+<p><strong>Parameters:</strong> <code>filePath</code> is the path of the file to read.</p>
+
+<p><strong>Returns:</strong> The body of the request contains the file content. The following headers are set:</p>
+
+<ul><li><code>X-Revision-Id</code> - The <code>revisionId</code> of the current version of the file just read.</li><li><code>Content-Type</code> - The mimetype of the file just read.</li></ul>
+
+<p><strong>Status:</strong></p>
+
+<ul><li>404 - The file does not exist.</li></ul>
+
+<h2>Writing Files</h2>
+
+<p><strong>Url:</strong> <code>{baseUrl}/{filePath}</code> - <code>PUT</code></p>
+
+<p><strong>Parameters:</strong> <code>filePath</code> is the path of the file to read. The following headers are understood:</p>
+
+<ul><li><code>X-Revision-Id</code> - The <code>revisionId</code> that this edit has been based on.</li></ul>
+
+<p><strong>Returns:</strong> The body of the request is blank. The following headers are set:</p>
+
+<ul><li><code>X-Revision-Id</code> - The <code>revisionId</code> of the latest version of the file.</li><li><code>Content-Type</code> - The mimetype of the file just saved.</li></ul>
+
+<p><strong>Status:</strong></p>
+
+<ul><li>409 - Conflict. If an <code>X-Revision-Id</code> header was sent in the request it did not match the
+      latest version of the file. The returned <code>X-Revision-Id</code> is the latest version. The file
+      was not saved.</li></ul>

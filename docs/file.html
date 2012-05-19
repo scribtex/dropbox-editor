@@ -1,0 +1,111 @@
+<!DOCTYPE html>  <html> <head>   <title>file.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="base.html">                 base.js               </a>                                           <a class="source" href="directory.html">                 directory.js               </a>                                           <a class="source" href="file.html">                 file.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               file.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span><span class="p">([</span><span class="s2">&quot;models/base&quot;</span><span class="p">,</span> <span class="s2">&quot;lib/path_util&quot;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Base</span><span class="p">,</span> <span class="nx">PathUtil</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">File</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">idAttribute</span> <span class="o">:</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span>
+
+    <span class="nx">defaults</span> <span class="o">:</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Make sure these match the definitions of File.saveStatus and File.mergeStatus</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">saveStatus</span>  <span class="o">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+      <span class="nx">mergeStatus</span> <span class="o">:</span> <span class="s2">&quot;none&quot;</span>
+    <span class="p">},</span>
+
+    <span class="nx">ajaxOptions</span> <span class="o">:</span> <span class="p">{},</span>
+
+    <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      
+      <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+          <span class="nx">saveStatus</span>   <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">saveStatus</span><span class="p">.</span><span class="nx">SAVED</span><span class="p">,</span>
+          <span class="nx">mergeStatus</span>  <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">mergeStatus</span><span class="p">.</span><span class="nx">NONE</span><span class="p">,</span>
+          <span class="nx">savedContent</span> <span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">)</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;saveStatus&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">File</span><span class="p">.</span><span class="nx">saveStatus</span><span class="p">.</span><span class="nx">SAVING</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="mi">409</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Conflict</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+              <span class="nx">saveStatus</span>       <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">saveStatus</span><span class="p">.</span><span class="nx">NONE</span><span class="p">,</span>
+              <span class="nx">mergeStatus</span>      <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">mergeStatus</span><span class="p">.</span><span class="nx">NEEDS_MERGE</span><span class="p">,</span>
+              <span class="nx">latestRevisionId</span> <span class="o">:</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s2">&quot;X-Revision-Id&quot;</span><span class="p">)</span>
+            <span class="p">});</span>
+          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+              <span class="nx">saveStatus</span>  <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">saveStatus</span><span class="p">.</span><span class="nx">ERROR</span><span class="p">,</span>
+              <span class="nx">mergeStatus</span> <span class="o">:</span> <span class="nx">File</span><span class="p">.</span><span class="nx">mergeStatus</span><span class="p">.</span><span class="nx">NONE</span>
+            <span class="p">});</span>
+            <span class="nx">editor</span><span class="p">.</span><span class="nx">handleAjaxError</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">editor</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="nx">sync</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">methodMap</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;create&#39;</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;update&#39;</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;delete&#39;</span><span class="o">:</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;read&#39;</span><span class="o">:</span>   <span class="s1">&#39;GET&#39;</span>
+      <span class="p">};</span>
+
+      <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">type</span>        <span class="o">:</span> <span class="nx">methodMap</span><span class="p">[</span><span class="nx">method</span><span class="p">],</span>
+        <span class="nx">url</span>         <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(),</span>
+        <span class="nx">contentType</span> <span class="o">:</span> <span class="s2">&quot;text/plain&quot;</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">method</span> <span class="o">==</span> <span class="s2">&quot;update&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">params</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">);</span>
+        <span class="nx">params</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="s2">&quot;X-Revision-Id&quot;</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;currentRevisionId&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;saveStatus&quot;</span><span class="p">,</span> <span class="nx">File</span><span class="p">.</span><span class="nx">saveStatus</span><span class="p">.</span><span class="nx">SAVING</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ajaxOptions</span><span class="p">.</span><span class="nx">ignoreCache</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">[</span><span class="s2">&quot;beforeSend&quot;</span><span class="p">]</span> <span class="o">=</span>  <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">settings</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">&quot;If-Modified-Since&quot;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">options</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">parse</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resp</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="p">{};</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s2">&quot;X-Revision-Id&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">attributes</span><span class="p">.</span><span class="nx">currentRevisionId</span> <span class="o">=</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s2">&quot;X-Revision-Id&quot;</span><span class="p">);</span>
+        <span class="nx">attributes</span><span class="p">.</span><span class="nx">latestRevisionId</span>  <span class="o">=</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s2">&quot;X-Revision-Id&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">attributes</span><span class="p">.</span><span class="nx">content</span> <span class="o">=</span> <span class="nx">resp</span>
+        <span class="nx">attributes</span><span class="p">.</span><span class="nx">savedContent</span> <span class="o">=</span> <span class="nx">resp</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="nx">attributes</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">url</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">PathUtil</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;fileBaseUrl&quot;</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">));</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="nx">saveStatus</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="nx">SAVING</span>  <span class="o">:</span> <span class="s2">&quot;saving&quot;</span><span class="p">,</span>
+      <span class="nx">SAVED</span>   <span class="o">:</span> <span class="s2">&quot;saved&quot;</span><span class="p">,</span>
+      <span class="nx">ERROR</span>   <span class="o">:</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+      <span class="nx">NONE</span>    <span class="o">:</span> <span class="s2">&quot;none&quot;</span>
+    <span class="p">},</span>
+
+    <span class="nx">mergeStatus</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="nx">NEEDS_MERGE</span> <span class="o">:</span> <span class="s2">&quot;needs-merge&quot;</span><span class="p">,</span>
+      <span class="nx">MERGING</span>     <span class="o">:</span> <span class="s2">&quot;merging&quot;</span><span class="p">,</span>
+      <span class="nx">ERROR</span>       <span class="o">:</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+      <span class="nx">NONE</span>        <span class="o">:</span> <span class="s2">&quot;none&quot;</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+
+  <span class="k">return</span> <span class="nx">File</span><span class="p">;</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

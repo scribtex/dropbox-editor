@@ -1,0 +1,150 @@
+<!DOCTYPE html>  <html> <head>   <title>directory.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="base.html">                 base.js               </a>                                           <a class="source" href="directory.html">                 directory.js               </a>                                           <a class="source" href="file.html">                 file.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               directory.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span><span class="p">([</span><span class="s2">&quot;models/base&quot;</span><span class="p">,</span> <span class="s2">&quot;models/file&quot;</span><span class="p">,</span> <span class="s2">&quot;lib/path_util&quot;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Base</span><span class="p">,</span> <span class="nx">File</span><span class="p">,</span> <span class="nx">PathUtil</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">DirectoryEntries</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({});</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Directory</h1>
+
+<p>See <a href="base.html">Finding and creating models</a> for the features that the
+<code>Base</code> class provides.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">Directory</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">idAttribute</span> <span class="o">:</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>We use the <code>populated</code> flag
+to determine whether a directory is empty because
+it hasn't been loaded, or whether it is genuinely empty.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">defaults</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="nx">populated</span> <span class="o">:</span> <span class="kc">false</span>
+    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Initialize a blank set of entries. This is not set in defaults otherwise
+each model would have the same <code>entries</code> object.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">DirectoryEntries</span><span class="p">());</span>
+    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Our backend is inspired by a mixture of WEBDAV and the Dropbox API.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">sync</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>The only method currently implemented for directories is PROPFIND
+which returns a list of the directories properties and its entries.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="kd">var</span> <span class="nx">methodMap</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;read&#39;</span><span class="o">:</span>   <span class="s1">&#39;PROPFIND&#39;</span>
+      <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Eventually we'll allow updates to directories.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">methodMap</span><span class="p">[</span><span class="nx">method</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;I can&#39;t &quot;</span> <span class="o">+</span> <span class="nx">method</span> <span class="o">+</span> <span class="s2">&quot; a directory, sorry&quot;</span><span class="p">);</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Send the request via the jQuery AJAX method.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">type</span>        <span class="o">:</span> <span class="nx">methodMap</span><span class="p">[</span><span class="nx">method</span><span class="p">],</span>
+        <span class="nx">url</span>         <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(),</span>
+        <span class="nx">contentType</span> <span class="o">:</span> <span class="s2">&quot;text/json&quot;</span><span class="p">,</span>
+        <span class="nx">dataType</span>    <span class="o">:</span> <span class="s2">&quot;json&quot;</span>
+      <span class="p">}</span>
+      <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">options</span><span class="p">));</span>
+    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>A typical response from a PROPFIND request looks like</p>
+
+<pre><code>{
+     ...
+}
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">parse</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">entries</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Paths may be returned from the server with a leading slash,
+but our canonical form for paths is without a leading slash.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">PathUtil</span><span class="p">.</span><span class="nx">stripLeadingSlashes</span><span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Load the entries as either File or Directory models. See
+<a href="base.html">Finding and creating models</a> for the <code>findOrBuild</code>
+method.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;directory&quot;</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">dir</span> <span class="o">=</span> <span class="nx">Directory</span><span class="p">.</span><span class="nx">findOrBuild</span><span class="p">(</span><span class="nx">path</span><span class="p">);</span>
+          <span class="nx">dir</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+            <span class="nx">modified</span> <span class="o">:</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">modified</span>
+          <span class="p">});</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">).</span><span class="nx">add</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">file</span> <span class="o">=</span> <span class="nx">File</span><span class="p">.</span><span class="nx">findOrBuild</span><span class="p">(</span><span class="nx">path</span><span class="p">);</span>
+          <span class="nx">file</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+            <span class="nx">size</span>     <span class="o">:</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span>
+            <span class="nx">type</span>     <span class="o">:</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">mimetype</span><span class="p">,</span>
+            <span class="nx">modified</span> <span class="o">:</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">modified</span>
+          <span class="p">});</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">).</span><span class="nx">add</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+      
+      <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">populated</span> <span class="o">:</span> <span class="kc">true</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">url</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">PathUtil</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">editor</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;fileBaseUrl&quot;</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">));</span>
+    <span class="p">},</span>
+
+    <span class="nx">populateSubDirectories</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="kd">function</span> <span class="nx">_populateSubDirectories</span><span class="p">()</span> <span class="p">{</span> 
+        <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span> <span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span> <span class="k">instanceof</span> <span class="nx">Directory</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">entry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;populated&quot;</span><span class="p">))</span> <span class="p">{</span>
+              <span class="nx">Directory</span><span class="p">.</span><span class="nx">fetchQueue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">entry</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">});</span>
+
+        <span class="nx">self</span><span class="p">.</span><span class="nx">_fetchNextInQueue</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">originalDirectory</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">originalDirectory</span> <span class="o">||</span> <span class="k">this</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;populated&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">fetch</span><span class="p">({</span>
+          <span class="nx">error</span> <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">error</span><span class="p">,</span>
+          <span class="nx">success</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">_populateSubDirectories</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span>
+          <span class="p">}</span>
+        <span class="p">})</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">_populateSubDirectories</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">_fetchNextInQueue</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">Directory</span><span class="p">.</span><span class="nx">openFetches</span> <span class="o">&lt;</span> <span class="nx">Directory</span><span class="p">.</span><span class="nx">maxFetches</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Use a first in first out system to that we do a breadth first search</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">var</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">Directory</span><span class="p">.</span><span class="nx">fetchQueue</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">next</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+
+        <span class="nx">Directory</span><span class="p">.</span><span class="nx">openFetches</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">next</span><span class="p">.</span><span class="nx">fetch</span><span class="p">({</span>
+          <span class="nx">success</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">directory</span><span class="p">,</span> <span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">Directory</span><span class="p">.</span><span class="nx">openFetches</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="nx">directory</span><span class="p">.</span><span class="nx">populateSubDirectories</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+          <span class="p">},</span>
+          <span class="nx">error</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">directory</span><span class="p">,</span> <span class="nx">resp</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">Directory</span><span class="p">.</span><span class="nx">openFetches</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">options</span><span class="p">.</span><span class="nx">error</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">options</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">directory</span><span class="p">,</span> <span class="nx">resp</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">});</span>
+      <span class="p">}</span> 
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">Directory</span><span class="p">.</span><span class="nx">fetchQueue</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">Directory</span><span class="p">.</span><span class="nx">openFetches</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">options</span><span class="p">.</span><span class="nx">success</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">originalDirectory</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nx">printTree</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">depth</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">depth</span> <span class="o">==</span> <span class="s2">&quot;undefined&quot;</span><span class="p">)</span> <span class="nx">depth</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+
+      <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">str</span> <span class="o">+=</span> <span class="nx">depth</span> <span class="o">+</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;\n&quot;</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span> <span class="k">instanceof</span> <span class="nx">Directory</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">str</span> <span class="o">+=</span> <span class="nx">entry</span><span class="p">.</span><span class="nx">printTree</span><span class="p">(</span><span class="nx">depth</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+
+      <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+    <span class="p">},</span>
+
+    <span class="nx">eachFile</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span> <span class="k">instanceof</span> <span class="nx">Directory</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">entry</span><span class="p">.</span><span class="nx">eachFile</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span> <span class="k">instanceof</span> <span class="nx">File</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="nx">entry</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="nx">maxFetches</span>  <span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nx">openFetches</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">fetchQueue</span>  <span class="o">:</span> <span class="p">[]</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">Directory</span><span class="p">;</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
