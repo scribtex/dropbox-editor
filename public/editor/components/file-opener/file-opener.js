@@ -39,7 +39,7 @@ define([
             // We won't enable the open button yet.
           }
         });
-        this.openFileDialog.$(".file-list-wrapper").append(this.fileBrowserView.render().el);
+        this.openFileDialog.$(".file-browser").append(this.fileBrowserView.render().el);
         this._disableOpenButton();
       }
       return this.openFileDialog;

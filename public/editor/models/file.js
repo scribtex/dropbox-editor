@@ -78,6 +78,7 @@ define(["models/base", "lib/path_util"], function(Base, PathUtil) {
       if (xhr.getResponseHeader("X-Revision-Id")) {
         attributes.currentRevisionId = xhr.getResponseHeader("X-Revision-Id");
         attributes.latestRevisionId  = xhr.getResponseHeader("X-Revision-Id");
+        attributes.icon              = xhr.getResponseHeader("X-Icon");
       }
 
       if (resp) {

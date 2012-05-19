@@ -63,7 +63,8 @@ define(["models/base", "models/file", "lib/path_util"], function(Base, File, Pat
         if (entry.type == "directory") {
           var dir = Directory.findOrBuild(path);
           dir.set({
-            modified : entry.modified
+            modified : entry.modified,
+            icon     : entry.icon
           });
           self.get("entries").add(dir);
         } else if (entry.type == "file") {
@@ -71,14 +72,17 @@ define(["models/base", "models/file", "lib/path_util"], function(Base, File, Pat
           file.set({
             size     : entry.size,
             type     : entry.mimetype,
-            modified : entry.modified
+            modified : entry.modified,
+            icon     : entry.icon
           });
           self.get("entries").add(file);
         }
       });
       
       return {
-        populated : true
+        populated : true,
+        icon      : data.icon,
+        modified  : data.modified
       }
     },
 

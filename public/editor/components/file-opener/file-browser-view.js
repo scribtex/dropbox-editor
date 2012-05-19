@@ -28,7 +28,8 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
     render : function() {
       this.$el.append(
         _.template( $("#file-list-entry-template").html(), {
-          name : PathUtil.basename(this.model.get("path"))
+          name : this.options.name || PathUtil.basename(this.model.get("path")),
+          icon : this.options.icon || this.model.get("icon")
         })
       );
       return this;
@@ -69,8 +70,26 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
       // `FileListEntryView` instances. The `entryViews` attribute keeps 
       // track of these.
       this.entryViews = [];
-    },
 
+      // When the user presses up or down we'll move the selection
+      // up or down. Enter will open the selection.
+      var self = this;
+      $(document.body).on("keydown", function(e) {
+        if (self.$el.is(":visible")) {
+          if (e.keyCode == 40) { // Down
+            self._moveSelection(1);
+            e.preventDefault();
+          } else if (e.keyCode == 38) { // Up
+            self._moveSelection(-1);
+            e.preventDefault();
+          } else if (e.keyCode == 13) { // Enter
+            self.openSelected();
+            e.preventDefault();
+          }
+        }
+      })
+    },
+    
     // Rendering first renders our template and then populates our list by
     // opening the directory.
     render : function() {
@@ -112,6 +131,14 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
       this._bindToModel();
       
       // And finally repopulate the entry views
+      if (this.model !== editor.get("rootDirectory")) {
+        this._insertEntry(Directory.findOrBuild(
+          PathUtil.dirname(this.model.get("path"))
+        ), {
+          name : "Previous",
+          icon : "arrow_turn_left"
+        });
+      }
       if (this.model.get("populated")) {
         var self = this;
         this.model.get("entries").each(function(entry) {
@@ -141,7 +168,7 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
       if (!this.$loadingEl) {
         this.$loadingEl = $( $("#file-list-loading-template").html() );
       }
-      this.$el.append(this.$loadingEl);
+      this.$(".file-list").append(this.$loadingEl);
     },
     
     // Remove the loading element, presumably because we have some entries to add.
@@ -153,10 +180,10 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
 
     // Create a new `FileListEntryView` instance for the passed `entry` and
     // insert it into our list. We also start listening for any events on it.
-    _insertEntry : function(entry) {
-      var entryView = new FileListEntryView({
+    _insertEntry : function(entry, options) {
+      var entryView = new FileListEntryView(_.extend(options || {}, {
         model : entry
-      });
+      }));
       
       this._bindToEntryView(entryView);
       this.entryViews.push(entryView);
@@ -195,8 +222,41 @@ define(["models/directory", "lib/path_util"], function(Directory, PathUtil) {
       if (this.selectedEntryView) {
         this.selectedEntryView.unselect();
       }
-      delete this.selectEntryView;
+      delete this.selectedEntryView;
       this.trigger("change:selection", null);
+    },
+
+    // Move the selection onto the entry with is `offset` entries
+    // away from the currently selected entry.
+    _moveSelection : function(offset, scrollIntoView, selectIfUnselected) {
+      if (typeof scrollIntoView == "undefined") scrollIntoView = true;
+      if (typeof selectIfUnselected == "undefined") selectIfUnselected = true;
+      
+      if (!this.selectedEntryView && !selectIfUnselected) return;
+
+      var index = this.entryViews.indexOf(this.selectedEntryView) + offset;
+      if (index < 0) index = 0;
+      if (index > this.entryViews.length - 1) index = this.entryViews.length - 1;
+
+      var view = this.entryViews[index];
+      view.select();
+
+      if (scrollIntoView) {
+        // Scroll the entry into visibility
+        // Note that this needs the parent element to have relative positioning
+        // in the css.
+        var elementLowerOffset = view.$el.position().top + 
+                                 view.$el.outerHeight() - 
+                                 $(".file-list-wrapper").innerHeight(); 
+
+        if (elementLowerOffset > $(".file-list-wrapper").scrollTop()) {
+          $(".file-list-wrapper").scrollTop(elementLowerOffset);
+        }
+
+        if (view.$el.position().top < $(".file-list-wrapper").scrollTop()) {
+          $(".file-list-wrapper").scrollTop(view.$el.position().top);
+        }
+      }
     }
   });
 

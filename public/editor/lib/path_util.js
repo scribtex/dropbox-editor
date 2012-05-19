@@ -29,7 +29,12 @@ define(function() {
 
     basename : function(path) {
       return path.split("/").slice(-1)[0];
-    }
+    },
+
+		dirname : function(path) {
+			var parts = path.split("/");
+			return parts.slice(0, parts.length - 1).join("/");
+		}
   };
 
   return PathUtil;

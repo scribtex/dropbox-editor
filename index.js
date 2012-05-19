@@ -59,7 +59,8 @@ app.get(/^\/files\/(.*)/, function(req, res, next) {
     if (metadata) {
       headers = {
         "Content-Type"  : metadata["mime_type"],
-        "X-Revision-Id" : metadata["rev"]
+        "X-Revision-Id" : metadata["rev"],
+        "X-Icon"        : metadata["icon"]
       }
     }
 
@@ -126,7 +127,8 @@ function formatMetadata(metadata) {
     path : metadata.path,
     mimetype : metadata.mime_type,
     type : metadata.is_dir ? "directory" : "file",
-    revision_id : metadata.rev
+    revision_id : metadata.rev,
+    icon : metadata.icon
   };
 
   if (metadata.contents) {
