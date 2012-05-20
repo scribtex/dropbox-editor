@@ -12,6 +12,8 @@ define(["components/base", "lib/path_util"], function(Base, PathUtil) {
       //       tabPaneEl : ...  // The jQuery wrapped element of the tab pane
       //     }
       this.openTabs = {};
+      
+      $("#tab-bar").sortable();
     },
 
     open : function(file, fileView) {
@@ -59,17 +61,25 @@ define(["components/base", "lib/path_util"], function(Base, PathUtil) {
       delete this.openTabs[file.id];
       editor.get("openFiles").remove(file);
 
-      // Open the previous tab
-      var previousTabEl = tab.tabEl.prev();
-      if (previousTabEl.length > 0) {
-        setTimeout(function() {
-          previousTabEl.find("a").tab("show");
-        }, 10);
-      } else {
-        editor.set({
-          openFile     : null,
-          openFileView : null
-        })
+      // If the tab is currently selected we open either the previous of
+      // next tab (unless there are no more tabs!)
+      if (tab.tabEl.hasClass("active")) {
+        var previousTabEl = tab.tabEl.prev();
+        var nextTabEl = tab.tabEl.next();
+        if (previousTabEl.length > 0) {
+          setTimeout(function() {
+            previousTabEl.find("a").tab("show");
+          }, 10);
+        } else if (nextTabEl.length > 0) {
+          setTimeout(function() {
+            nextTabEl.find("a").tab("show");
+          }, 10);
+        } else {
+          editor.set({
+            openFile     : null,
+            openFileView : null
+          })
+        }
       }
 
       tab.tabEl.prev().tab("show")

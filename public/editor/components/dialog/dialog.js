@@ -9,7 +9,8 @@ define(function() {
       this.$el.append(this.dialog);
       this.dialog.modal({
         show     : false,
-        keyboard : false
+        keyboard : false,
+        backdrop : "static" // Don't close on click
       });
       this.dialog.hide();
     },
