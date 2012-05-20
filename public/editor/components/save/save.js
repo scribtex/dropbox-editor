@@ -1,7 +1,7 @@
 define(["components/base", "components/text-editor/text-editor", "models/file"], function(Component, TextEditor, File) {
   var Save = Component.extend({
     initialize : function() {
-      this.enableSaving();
+      this.disableSaving();
 
       this.templates = {
         saveSuccess : _.template( $("#save-success-template").html() ),
@@ -10,9 +10,7 @@ define(["components/base", "components/text-editor/text-editor", "models/file"],
         merging     : _.template( $("#save-merging-template").html() )
       };
 
-      editor.on("change:openFile change:openFileView", this._setupForOpenFile, this);
-
-      this._setupForOpenFile();
+      editor.on("change:openFile", this._openFileChanged, this);
     },
 
     save : function() {
@@ -72,7 +70,7 @@ define(["components/base", "components/text-editor/text-editor", "models/file"],
       }
     },
 
-    _setupForOpenFile : function() {
+    _openFileChanged : function() {
       this._enableOrDisableSaving();
 
       if (editor.hasChanged("openFile") && editor.previous("openFile")) {

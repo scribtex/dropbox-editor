@@ -32,15 +32,15 @@ define([
       this.mainView.render();
 
       this.components = {
-        save       : new Save(),
         merge      : new Merge(),
         fileOpener : new FileOpener(),
         tabs       : new Tabs()
       }
+      // Save depends on `tabs` already existing
+      this.components.save = new Save();
     },
 
     openFile : function(file) {
-      console.log("opening", file);
       // If the file isn't already open we need to insert it into the collection of
       // `openFiles`. Everything else should watch this collection if they need to
       // react to this.
@@ -55,9 +55,10 @@ define([
 
         // Display the tab
         this.components.tabs.open(file, fileView);
+      } else {
+        this.components.tabs.show(file);
       }
 
-      this.set("openFile", file);
     },
 
     _getFileViewType : function(type) {

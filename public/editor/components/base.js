@@ -5,6 +5,8 @@ define(function() {
     }
   };
 
+  _.extend(Component.prototype, Backbone.Events)
+
   Component.extend = Backbone.Model.extend;
 
   return Component;

@@ -6,7 +6,9 @@ define(["components/base", "models/file", "components/dialog/dialog"], function(
         if (editor.hasChanged("openFile") && editor.previous("openFile")) {
           editor.previous("openFile").off("change:mergeStatus", self.margeStatusChanged);
         }
-        editor.get("openFile").on("change:mergeStatus", self.mergeStatusChanged, self);
+				if (editor.get("openFile")) {
+        	editor.get("openFile").on("change:mergeStatus", self.mergeStatusChanged, self);
+				}
       });
     },
 

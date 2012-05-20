@@ -64,7 +64,7 @@ define(["models/base", "lib/path_util"], function(Base, PathUtil) {
       }
 
       if (this.ajaxOptions.ignoreCache) {
-        options["beforeSend"] =  function(xhr, settings) {
+        options["beforeSend"] = function(xhr, settings) {
           xhr.setRequestHeader("If-Modified-Since", null);
         }
       }
@@ -78,7 +78,10 @@ define(["models/base", "lib/path_util"], function(Base, PathUtil) {
       if (xhr.getResponseHeader("X-Revision-Id")) {
         attributes.currentRevisionId = xhr.getResponseHeader("X-Revision-Id");
         attributes.latestRevisionId  = xhr.getResponseHeader("X-Revision-Id");
-        attributes.icon              = xhr.getResponseHeader("X-Icon");
+      }
+
+      if (xhr.getResponseHeader("X-Icon")) {
+        attributes.icon = xhr.getResponseHeader("X-Icon");
       }
 
       if (resp) {
