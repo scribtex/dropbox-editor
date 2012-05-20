@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
   <head>
 
@@ -20,11 +20,12 @@
   
   </head>
 
-  <body class="editor">
+  <body class="editor no-bounce">
     <script type="text/template" id="main-template">
       <div class="toolbar" id="toolbar">
-        <a class="save-btn btn" id="save-button"><i class="icon-save"></i> Save</a>
-        <a class="open-btn btn" id="open-button"><i class="icon-open"></i> Open</a>
+        <a class="save-btn btn" id="save-button" href="#"><i class="icon-save"></i> Save</a>
+        <a class="open-btn btn" id="open-button" href="#"><i class="icon-open"></i> Open</a>
+        <a class="compile-btn btn" id="compile-button" href="/editor/compiled.html" target="compile-window"><i class="icon-compile"></i> Compile</a>
         <span id="save-status"></span>
       </div>
 

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>
+      Compiled document
+    </title>
+  
+    <link rel="stylesheet" href='/editor/bootstrap/bootstrap/css/bootstrap.css'></link>
+    
+    <script src='/editor/support/jquery-1.7.2.min.js'></script>  
+    <script src='/editor/support/jquery-ui-1.8.20.min.js'></script>  
+    <script src='/editor/bootstrap/js/bootstrap-tab.js'></script>  
+    <script src='/editor/support/underscore-min.js'></script>  
+    <script src='/editor/support/backbone-min.js'></script>  
+    <script src='/editor/support/backbone-customisations.js'></script>  
+    <script src='/editor/support/require.js' data-main="compile-window"></script>  
+  
+  </head>
+
+  <body class="no-bounce">
+    <script type="text/template" id="pdf-tabs-template">
+      <ul class="nav nav-tabs full-page-pdf-tabs" id="pdf-tabs">
+        <a class="btn btn-primary" href="{{ pdfSrc }}">Download</a>
+        <li>
+          <a href="#log" data-toggle="tab">Log</a>
+        </li>
+
+        <li class="active">
+          <a href="#pdf" data-toggle="tab">PDF</a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="pdf-tab-pane tab-pane active" id="pdf">
+          <embed src="{{ pdfSrc }}"></embed>
+        </div>
+        <div class="log-tab-pane tab-pane" id="log">Log</div>
+      </div>
+    </script>
+  </body>
+</html>

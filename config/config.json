@@ -6,5 +6,9 @@
   "cookie" : {
     "secret" : "nzalv26mhkp3h5jzc7p30tdh3lj9rpyxliyxic97hjeyf6t691golpgwr8j1siyn"
   },
-  "host" : "localhost:3000"
+  "host" : "http://localhost:3000",
+  "clsi" : {
+    "host"  : "http://localhost:3002",
+    "token" : "1bd993d7d739eca8740f9919d8748352"
+  }
 }

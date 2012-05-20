@@ -2,9 +2,10 @@ define([
   "components/base",
   "components/compile/clsi_client",
   "components/dialog/dialog",
+  "components/text-editor/text-editor",
   "components/compile/views/new-window-view",
   "lib/path_util"
-], function(Base, CLSIClient, Dialog, NewWindowView, PathUtil) {
+], function(Base, CLSIClient, Dialog, TextEditor, NewWindowView, PathUtil) {
   var CompileState = Backbone.Model.extend();
 
   var Compile = Base.extend({
@@ -34,14 +35,18 @@ define([
       var resources = [];
       var options = {};
 
-      editor.get("openFileView").transferContentToModel();
+
+      if (!editor.get("openFile")) {
+        this.enableCompiling();
+        return;
+      }
 
       var rootResourcePath;
-      if (editor.get("openFile").get("content").match(/\\documentclass/)) {
-        rootResourcePath = editor.get("openFile").get("path")
-      } else {
-        rootResourcePath = editor.get("mainFile");
-      }
+      editor.get("openFiles").each(function(file) {
+        if (file.get("content") && file.get("content").match(/\\documentclass/)) {
+          rootResourcePath = file.get("path")
+        }
+      });
 
       if (!rootResourcePath) {
         this.showNoRootResourceDialog();
@@ -49,20 +54,29 @@ define([
         return;
       }
 
+      // Lets gather the resources by their ids so that we can override existing ones
+      // We'll group them into an array later.
+      var resources = {};
       editor.get("rootDirectory").eachFile(function(file) {
-        if (file === editor.get("openFile")) {
-          resources.push({
+        resources[file.id] = {
+          path     : file.get("path"),
+          url      : PathUtil.join(editor.get("host"), editor.get("fileBaseUrl"), file.get("path")),
+          modified : file.get("modified")
+        };
+      });
+      // Override resources with content from open files
+      _.each(editor.components.tabs.getOpenFileViews(), function(fileView) {
+        if (fileView instanceof TextEditor) {
+          var file = fileView.model;
+          fileView.transferContentToModel();
+          resources[file.id] = {
             content : file.get("content"),
             path    : file.get("path")
-          });
-        } else {
-          resources.push({
-            path    : file.get("path"),
-            url     : PathUtil.join(editor.get("origin"), editor.get("fileBaseUrl"), file.get("path")),
-            modifed : file.get("lastModified")
-          });
+          };
         }
       });
+      // Flatten our resource down to an array.
+      resources = _.map(resources, function(value, key) { return value });
       
       var self = this;
       CLSIClient.compile(resources, {
@@ -97,12 +111,12 @@ define([
     enableCompiling : function() {
       $("#compile-button").removeClass("disabled");
       var self = this;
-      $("#compile-button").on("click", function() { self.compile() });
+      $("#compile-button").on("click.compile", function() { self.compile() });
     },
 
     disableCompiling : function() {
       $("#compile-button").addClass("disabled");
-      $("#compile-button").off("click");
+      $("#compile-button").off("click.compile");
     },
 
     showNoRootResourceDialog : function() {

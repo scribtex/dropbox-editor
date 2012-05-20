@@ -8,8 +8,9 @@ define([
   "components/merge/merge",
   "components/file-opener/file-opener",
   "components/tabs/tabs",
+  "components/compile/compile",
   "components/dialog/dialog"
-], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, FileOpener, Tabs, Dialog) {
+], function(File, Directory, MainView, TextEditor, ImageViewer, Save, Merge, FileOpener, Tabs, Compile, Dialog) {
   if (typeof console === "undefined" || typeof console.log === "undefined") {
     console = {};
     console.log = function() {};
@@ -21,6 +22,9 @@ define([
     defaults : {
       fileBaseUrl   : "/files",
       mergeUrl      : "/merge",
+      clsiUrl       : "/clsi",
+      compileWindowUrl : "/editor/compiled.html",
+      host          : location.protocol + "//" + location.host,
       rootDirectory : Directory.findOrBuild(""),
       openFiles     : new OpenFiles()
     },
@@ -34,7 +38,8 @@ define([
       this.components = {
         merge      : new Merge(),
         fileOpener : new FileOpener(),
-        tabs       : new Tabs()
+        tabs       : new Tabs(),
+        compile    : new Compile()
       }
       // Save depends on `tabs` already existing
       this.components.save = new Save();

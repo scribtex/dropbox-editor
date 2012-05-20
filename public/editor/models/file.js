@@ -84,6 +84,10 @@ define(["models/base", "lib/path_util"], function(Base, PathUtil) {
         attributes.icon = xhr.getResponseHeader("X-Icon");
       }
 
+      if (xhr.getResponseHeader("Last-Modified")) {
+        attributes.modified = xhr.getResponseHeader("Last-Modified");
+      }
+
       if (resp) {
         attributes.content = resp
         attributes.savedContent = resp

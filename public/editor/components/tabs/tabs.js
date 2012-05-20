@@ -59,7 +59,7 @@ define(["components/base", "lib/path_util"], function(Base, PathUtil) {
 
       // Remove it from the places the open files and tabs are stored.
       delete this.openTabs[file.id];
-      editor.get("openFiles").remove(file);
+      editor.get("openFiles").remove(tab.file);
 
       // If the tab is currently selected we open either the previous of
       // next tab (unless there are no more tabs!)
@@ -97,6 +97,10 @@ define(["components/base", "lib/path_util"], function(Base, PathUtil) {
       if (!tab) return;
 
       tab.tabEl.find("a").tab("show");
+    },
+
+    getOpenFileViews : function(file) {
+      return _.map(this.openTabs, function(tab) { return tab.fileView });
     },
 
     _removeEventListeners : function(tabEl) {

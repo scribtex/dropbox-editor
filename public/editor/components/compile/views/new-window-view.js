@@ -5,10 +5,10 @@ define(["lib/path_util"], function(PathUtil) {
     },
 
     openWindow : function(compileId, pdfExists) {
-      var url = PathUtil.join(editor.get("projectBaseUrl"), "compiled");
+      var url = editor.get("compileWindowUrl");
       url += "?compileId=" + compileId;
       url += "&success=" + pdfExists;
-      this.compileWindow = window.open(url, "scribtex-compiled");
+      this.compileWindow = window.open(url, "compile-window");
     },
 
     closeWindow : function() {
